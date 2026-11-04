@@ -20,7 +20,11 @@ const RULES_PATH = path.resolve(
   "../../semgrep-rules.yml"
 );
 
-const SEMGREP_BIN = process.env.SEMGREP_BIN || "semgrep";
+const SEMGREP_BIN =
+  process.env.SEMGREP_BIN ||
+  (process.platform === "win32"
+    ? "semgrep"
+    : path.resolve(currentDirectory, "../../.venv/bin/semgrep"));
 
 const MAX_CODE_SIZE = 100 * 1024;
 const MAX_OUTPUT_SIZE = 10 * 1024 * 1024;
