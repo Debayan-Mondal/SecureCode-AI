@@ -1,0 +1,215 @@
+
+rules:
+  - id: securecode.javascript.dynamic-eval
+    languages:
+      - javascript
+    severity: ERROR
+    message: Avoid using eval() because it can execute untrusted input as code.
+    metadata:
+      category: security
+      cwe:
+        - CWE-95
+      owasp:
+        - A03:2021
+      remediation: Use safer alternatives such as JSON.parse() or explicit logic.
+    pattern: eval(...)
+  - id: securecode.javascript.unsafe-innerhtml
+    languages:
+      - javascript
+    severity: WARNING
+    message: Assigning untrusted data to innerHTML may introduce cross-site scripting (XSS).
+    metadata:
+      category: security
+      cwe:
+        - CWE-79
+      owasp:
+        - A03:2021
+      remediation: Use textContent or safely sanitize HTML before insertion.
+    pattern: $ELEMENT.innerHTML = $VALUE
+  - id: securecode.javascript.dynamic-function
+    languages:
+      - javascript
+    severity: ERROR
+    message: Using the Function constructor to execute dynamically generated code can introduce code injection.
+    metadata:
+      category: security
+      cwe:
+        - CWE-95
+      owasp:
+        - A03:2021
+      remediation: Avoid dynamic code generation and use predefined functions.
+    pattern: new Function(...)
+  - id: securecode.javascript.document-write
+    languages:
+      - javascript
+    severity: WARNING
+    message: document.write() with untrusted content may introduce cross-site scripting.
+    metadata:
+      category: security
+      cwe:
+        - CWE-79
+      owasp:
+        - A03:2021
+      remediation: Use safe DOM methods such as textContent or createElement().
+    pattern: document.write(...)
+  - id: securecode.javascript.disabled-tls-verification
+    languages:
+      - javascript
+    severity: WARNING
+    message: Disabling TLS certificate verification can expose connections to man-in-the-middle attacks.
+    metadata:
+      category: security
+      cwe:
+        - CWE-295
+      owasp:
+        - A02:2021
+      remediation: Keep certificate verification enabled and use valid TLS certificates.
+    pattern: |
+      rejectUnauthorized: false
+  - id: securecode.python.dynamic-eval
+    languages:
+      - python
+    severity: ERROR
+    message: Avoid using eval() because it can execute untrusted input as code.
+    metadata:
+      category: security
+      cwe:
+        - CWE-95
+      owasp:
+        - A03:2021
+      remediation: Use safer alternatives such as ast.literal_eval() for literal expressions.
+    pattern: eval(...)
+  - id: securecode.python.subprocess-shell-true
+    languages:
+      - python
+    severity: ERROR
+    message: Using shell=True with subprocess and untrusted input can lead to command injection.
+    metadata:
+      category: security
+      cwe:
+        - CWE-78
+      owasp:
+        - A03:2021
+      remediation: Use shell=False and pass commands as a list of arguments.
+    pattern: |
+      subprocess.$FUNC(..., shell=True, ...)
+  - id: securecode.python.unsafe-pickle
+    languages:
+      - python
+    severity: ERROR
+    message: pickle.loads() can execute malicious code when processing untrusted serialized data.
+    metadata:
+      category: security
+      cwe:
+        - CWE-502
+      owasp:
+        - A08:2021
+      remediation: Avoid deserializing untrusted pickle data. Prefer safer formats such as JSON.
+    pattern: pickle.loads(...)
+  - id: securecode.python.unsafe-yaml-load
+    languages:
+      - python
+    severity: ERROR
+    message: yaml.load() without an explicit safe loader may allow unsafe object deserialization.
+    metadata:
+      category: security
+      cwe:
+        - CWE-502
+      owasp:
+        - A08:2021
+      remediation: Use yaml.safe_load() for untrusted YAML data.
+    pattern: yaml.load($DATA)
+  - id: securecode.python.disabled-tls-verification
+    languages:
+      - python
+    severity: WARNING
+    message: verify=False disables TLS certificate verification and can expose connections to man-in-the-middle attacks.
+    metadata:
+      category: security
+      cwe:
+        - CWE-295
+      owasp:
+        - A02:2021
+      remediation: Remove verify=False and configure valid certificates.
+    pattern-either:
+      - pattern: requests.get(..., verify=False, ...)
+      - pattern: requests.post(..., verify=False, ...)
+      - pattern: requests.put(..., verify=False, ...)
+      - pattern: requests.delete(..., verify=False, ...)
+  - id: securecode.javascript.sql-injection
+    languages:
+      - javascript
+    severity: ERROR
+    message: SQL queries built using string concatenation may introduce SQL injection.
+    metadata:
+      category: security
+      cwe:
+        - CWE-89
+      owasp:
+        - A03:2021
+      remediation: Use parameterized queries or prepared statements.
+    patterns:
+      - pattern: $DB.query($QUERY + $INPUT)
+      - metavariable-regex:
+          metavariable: $QUERY
+          regex: (?i).*(SELECT|INSERT|UPDATE|DELETE|WHERE).*
+  - id: securecode.python.sql-injection
+    languages:
+      - python
+    severity: ERROR
+    message: SQL queries built using string concatenation may introduce SQL injection.
+    metadata:
+      category: security
+      cwe:
+        - CWE-89
+      owasp:
+        - A03:2021
+      remediation: Use parameterized queries instead of concatenating user input.
+    patterns:
+      - pattern: $CURSOR.execute($QUERY + $INPUT)
+      - metavariable-regex:
+          metavariable: $QUERY
+          regex: (?i).*(SELECT|INSERT|UPDATE|DELETE|WHERE).*
+  - id: securecode.javascript.weak-hash
+    languages:
+      - javascript
+    severity: WARNING
+    message: MD5 and SHA1 are considered weak cryptographic hash algorithms.
+    metadata:
+      category: security
+      cwe:
+        - CWE-328
+      owasp:
+        - A02:2021
+      remediation: Use SHA-256 or stronger algorithms for general hashing. Use a password hashing algorithm such as Argon2id for passwords.
+    pattern-either:
+      - pattern: crypto.createHash("md5")
+      - pattern: crypto.createHash("sha1")
+  - id: securecode.python.weak-hash
+    languages:
+      - python
+    severity: WARNING
+    message: MD5 and SHA1 are considered weak cryptographic hash algorithms.
+    metadata:
+      category: security
+      cwe:
+        - CWE-328
+      owasp:
+        - A02:2021
+      remediation: Use SHA-256 or stronger algorithms for general hashing. Use a password hashing algorithm such as Argon2id for passwords.
+    pattern-either:
+      - pattern: hashlib.md5(...)
+      - pattern: hashlib.sha1(...)
+  - id: securecode.python.flask-debug-enabled
+    languages:
+      - python
+    severity: WARNING
+    message: Enabling Flask debug mode in a deployed application can expose sensitive debugging functionality.
+    metadata:
+      category: security
+      cwe:
+        - CWE-489
+      owasp:
+        - A05:2021
+      remediation: Disable debug mode in production environments.
+    pattern: app.run(..., debug=True, ...)
