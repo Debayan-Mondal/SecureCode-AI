@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
+
 import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import GuestRoute from "./components/auth/GuestRoute";
@@ -13,6 +14,7 @@ import HistoryPage from "./pages/HistoryPage";
 import ScanDetailsPage from "./pages/ScanDetailsPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import BackendStatusIndicator from "./components/BackendStatusIndicator";
 
 import useAuthStore from "./stores/useAuthStore";
 
@@ -31,19 +33,26 @@ const App = () => {
 
   
   if (!authChecked) {
-    return (
+  return (
+    <>
+      <BackendStatusIndicator />
+
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="h-8 w-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+
           <p className="text-sm text-zinc-400">
             Loading SecureCode AI...
           </p>
         </div>
       </div>
-    );
-  }
+    </>
+  );
+}
 
   return (
+    <>
+      <BackendStatusIndicator />
     <Routes>
 
       
@@ -136,6 +145,7 @@ const App = () => {
       <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>
+    </>
   );
 };
 
